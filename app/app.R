@@ -71,7 +71,11 @@ ui <- fluidPage(
       ),
       
       # Game grid
-      uiOutput("game_grid")
+      uiOutput("game_grid"),
+      
+      verbatimTextOutput("debug_field"),
+      verbatimTextOutput("debug_revealed"),
+      verbatimTextOutput("debug_flagged")
     )
   )
 )
@@ -177,9 +181,8 @@ server <- function(input, output, session) {
     
     # Store current game configuration
     game_state$rows <- rows
-    game_state$cols <- input$grid_cols
-    game_state$num_mines <- input$num_mines
-    
+    game_state$cols <- cols
+    game_state$num_mines <- num_mines
     game_state$field <- generate_mine_field(rows, cols, num_mines)
     game_state$revealed <- Matrix(FALSE, nrow = rows, ncol = cols)
     game_state$flagged <- Matrix(FALSE, nrow = rows, ncol = cols)
@@ -251,7 +254,12 @@ server <- function(input, output, session) {
     if (input$game_mode == "flag") {
       # If not revealed, toggle flag
       if (!game_state$revealed[r, c]) {
-        game_state$flagged[r, c] <- !game_state$flagged[r, c]
+        # if not flagged, add flag
+        if (!game_state$flagged[r, c]) {
+        game_state$flagged[r, c] <- TRUE
+        } else {
+          game_state$flagged[r, c] <- FALSE
+        }
       }
     } else {
       # Reveal cell if not flagged
@@ -340,6 +348,17 @@ server <- function(input, output, session) {
       div(class = "game-grid", cells_flat),
       div(style = "margin-top: 10px; color: red;", status_message)
     )
+  })
+  
+  ## render debug text
+  output$debug_field <- renderPrint({
+    game_state$field
+  })
+  output$debug_revealed <- renderPrint({
+    game_state$revealed
+  })
+  output$debug_flagged <- renderPrint({
+    game_state$flagged
   })
 }
 
