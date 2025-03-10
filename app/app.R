@@ -71,11 +71,7 @@ ui <- fluidPage(
       ),
       
       # Game grid
-      uiOutput("game_grid"),
-      
-      verbatimTextOutput("debug_field"),
-      verbatimTextOutput("debug_revealed"),
-      verbatimTextOutput("debug_flagged")
+      uiOutput("game_grid")
     )
   )
 )
@@ -348,17 +344,6 @@ server <- function(input, output, session) {
       div(class = "game-grid", cells_flat),
       div(style = "margin-top: 10px; color: red;", status_message)
     )
-  })
-  
-  ## render debug text
-  output$debug_field <- renderPrint({
-    game_state$field
-  })
-  output$debug_revealed <- renderPrint({
-    game_state$revealed
-  })
-  output$debug_flagged <- renderPrint({
-    game_state$flagged
   })
 }
 
