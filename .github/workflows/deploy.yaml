@@ -1,4 +1,4 @@
-name: Deploy app
+name: Deploy
 
 on:
   workflow_call:
@@ -34,13 +34,13 @@ jobs:
         run: |
           # Find package dependencies using {renv} and install with {pak}
           pak::pak(
-            unique(renv::dependencies(".")$Package)
+            unique(renv::dependencies("app")$Package)
           )
 
       - name: Build site
         shell: Rscript {0}
         run: |
-          shinylive::export(".", "site")
+          shinylive::export("app", "site")
 
       - name: Upload site artifact
         if: github.ref == 'refs/heads/main'
